@@ -219,19 +219,134 @@ from employee e left join employee m
 on e.manager = m.eno;
 
 
+------------------------------------------------------------------------
+
+
+/*
+	char	: MSSQL : 한글 1자를 2byte
+	nchar	: MSSQL : 한글의 글자수 만큼 입력되도록 처리함.
+
+	varchar
+	nvarchar
+	
+
+*/
+
+create table testTbl (
+	a char(4) ,		--한글 2자 : 4byte, 자리수를 알 수 있는 경우, 성능 빠름.
+	b nchar(4) ,	--한글 4자 : 8byte
+
+	c varchar(6),	--한글 3자 : 6byte, 자리수를 알 수 없는 경우, char 보다 느림.
+	d nvarchar(6) 	--한글 6자 : 12byte
+	);
+
+drop table teshTbl;
+
+insert into testTbl (b)
+values ('한글두자');
+
+
+select * from testTbl;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 
+
+
+create table userTbl (	-- 회원테이블
+	userID char(8) not null constraint PK_USERTBL_USERID primary key,	--사용자 ID
+	name nvarchar(10) not null,			--이름
+	birthYear int not null,				--생일의 년도, int : 4byte
+	addr nchar(3) not null,				--주소 (경기, 서울, 경남 3자까지만)
+	mobile1 char(3),					--핸드폰 (010, )
+	mobile2 char(8),					--핸드폰 뒷자리 8개
+	height smallint,					--키, smallint : 2byte
+	mDate date							--날짜 (회원가입일)
+	);
+
+create table buyTbl (	-- 구매테이블
+	num int IDENTITY not null constraint PK_BUYTBL_NUM primary key,
+	userID char(8) not null constraint FK_BUYTBL_USERID foreign key references userTbl(userID),
+	prodName nchar(6) not null, 
+	groupName nchar(4),
+	price int not null,
+	amount smallint not null
+	);
+
+select * from userTbl;
+select * from buyTbl;
 
 
 
+--값 넣기
+
+INSERT INTO userTbl VALUES('LSG', '이승기', 1987, '서울', '011','1111111', 182, '2008-8-8');
+INSERT INTO userTbl VALUES('KBS', '김범수', 1979, '경남', '011','2222222', 173, '2012-4-4');
+INSERT INTO userTbl VALUES('KKH', '김경호', 1971, '전남', '019','3333333', 177, '2007-7-7');
+INSERT INTO userTbl VALUES('JYP', '조용필', 1950, '경기', '011','4444444', 166, '2009-4-4');
+INSERT INTO userTbl VALUES('SSK', '성시경', 1979, '서울', NULL ,NULL , 186, '2013-12-12');
+INSERT INTO userTbl VALUES('LJB', '임재범', 1963, '서울', '016','6666666', 182, '2009-9-9');
+INSERT INTO userTbl VALUES('YJS', '윤종신', 1969, '경남', NULL ,NULL , 170, '2005-5-5');
+INSERT INTO userTbl VALUES('EJW', '은지원', 1972, '경북', '011','8888888', 174, '2014-3-3');
+INSERT INTO userTbl VALUES('JKW', '조관우', 1965, '경기', '018','9999999', 172, '2010-10-10');
+INSERT INTO userTbl VALUES('BBK', '바비킴', 1973, '서울', '010','0000000', 176, '2013-5-5');
+GO
+
+
+INSERT INTO buyTbl VALUES('KBS', '운동화', NULL , 30, 2);
+INSERT INTO buyTbl VALUES('KBS', '노트북', '전자', 1000, 1);
+INSERT INTO buyTbl VALUES('JYP', '모니터', '전자', 200, 1);
+INSERT INTO buyTbl VALUES('BBK', '모니터', '전자', 200, 5);
+INSERT INTO buyTbl VALUES('KBS', '청바지', '의류', 50, 3);
+INSERT INTO buyTbl VALUES('BBK', '메모리', '전자', 80, 10);
+INSERT INTO buyTbl VALUES('SSK', '책' , '서적', 15, 5);
+INSERT INTO buyTbl VALUES('EJW', '책' , '서적', 15, 2);
+INSERT INTO buyTbl VALUES('EJW', '청바지', '의류', 50, 1);
+INSERT INTO buyTbl VALUES('BBK', '운동화', NULL , 30, 2);
+INSERT INTO buyTbl VALUES('EJW', '책' , '서적', 15, 1);
+INSERT INTO buyTbl VALUES('BBK', '운동화', NULL , 30, 2);
+GO
+
+
+select * from userTbl;
+select * from buyTbl;
+
+--1. JOIN 사용해서 userID 이름, 주소, 구매물품 ,물품종류, 가격을 출력
+select u.userID,name 이름, addr 주소, prodname 구매물품, groupname 물품종류, price 가격
+from userTbl u, buyTbl b
+where u.userID = b.userID;
+
+--2. 구매 물품 종류를 그룹핑해서 가격의 합계, 평균을 구하세요.
+select sum(price) 합계, avg(price) 평균, groupname 구매물품종류, count(*) 개수
+from buyTbl
+group by groupname;
+
+--3. 주소별로 물품 구매 개수를 출력
+--MS SQL은 함수나 그룹핑을 컬럼에 처리할 경우 컬럼명이 없어짐	--별칭 사용
+select sum(amount) 물품구매개수, addr 주소, count(*) 그룹핑수
+from userTbl u, buyTbl b
+where u.userID = b.userID
+group by u.addr;
+
+--4. 구매 이력이 없는 사용자를 출력
+select name as 구매이력없는사용자
+from usertbl u, buyTbl b
+where u.userID = b.userID
+and groupname is null;
 
 
 
+-- IDENTITY : 초기값 : 1, 증가값 : 1씩 자동증가하는 컬럼.
+	--int : 정수형 데이터 타입으로 지정, not null
+	--일반적으로 pk	<== index가 자동으로 생성되고 검색 빠르게 한다.
+	--IDENTITY 키가 들어있는 컬럼은 값을넣으면 안됨.
 
 
 
+create database myDB2;
+
+
+/*<실습> user2 계정을 생성 후 myDB2만 접속 후 테이블생성, 값 insert, update , delete, drop table
+	<sql 인증>
 
 
 
-
-
+*/
 
 
